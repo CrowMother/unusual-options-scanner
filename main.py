@@ -13,6 +13,7 @@ def main():
     database = db.Database()  # Initialize the Database instance
 
 
+    #look into swapping out step 1 with an external program to produce a list of valid stocks
     #step 1 - get list of valid stocks over the min values
 
     #check if the database is empty, if it is, fetch and add stocks

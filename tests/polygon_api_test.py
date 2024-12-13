@@ -23,7 +23,7 @@ def test_process_message():
         price=1.24,
         sequence_number=1085599239,
         size=10000,
-        symbol='O:CELH241227C00032000',
+        symbol='O:ACAD250117P00003000',
         tape=None,
         timestamp=1733937449037,
         trf_id=None,

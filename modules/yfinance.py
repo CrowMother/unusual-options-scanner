@@ -17,6 +17,11 @@ def get_dow():
 def get_nasdaq():
     return si.tickers_nasdaq()
 
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=2, min=5, max=10))
+def get_current_price(symbol):
+    ticker = yf.Ticker(symbol)
+    return ticker.history(period="1d").iloc[-1]['Close']
+
 # Retry with exponential backoff for throttling errors
 @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=2, min=5, max=18))
 def filter_by_values(ticker, min_avg_volume, min_market_cap):

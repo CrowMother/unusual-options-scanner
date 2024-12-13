@@ -160,3 +160,34 @@ class Database:
         except Exception as e:
             print(f"Error during database query: {e}")
             return None
+        
+    def get_strike_range(self, symbol):
+        """
+        Retrieves the minimum and maximum strike prices for a given stock symbol.
+
+        Args:
+            symbol (str): The stock symbol to query.
+
+        Returns:
+            tuple: A tuple containing (min_strikePrice, max_strikePrice), or (None, None) if no data exists.
+        """
+        try:
+            # Execute the SQL query to get min and max strikePrice
+            self.cursor.execute(
+                "SELECT MIN(strikePrice), MAX(strikePrice) FROM options WHERE symbol LIKE ?",
+                (f"%{symbol}%",)
+            )
+            result = self.cursor.fetchone()
+            
+            # Check if result is None (no data)
+            if result is None or (result[0] is None and result[1] is None):
+                return None, None
+            
+            return result  # (min_strikePrice, max_strikePrice)
+        except sqlite3.Error as e:
+            print(f"Database error: {e}")
+            return None, None
+        except Exception as e:
+            print(f"Error: {e}")
+            return None, None
+

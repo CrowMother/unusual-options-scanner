@@ -234,3 +234,52 @@ def jsonify_data(price, size, timestamp, symbol, open_interest, full_symbol):
     }
     return data
 
+def extract_symbol_and_date(option_string):
+    """
+    Extracts the symbol and date (portion before the first 'C' or 'P' after numbers).
+
+    Args:
+        option_string (str): The option string to parse.
+
+    Returns:
+        str: The extracted symbol and date.
+    """
+    # Find position of the first number
+    first_number = next((i for i, char in enumerate(option_string) if char.isdigit()), None)
+    
+    # Ensure we start searching for 'C' or 'P' only after the first number
+    if first_number is not None:
+        first_c_or_p = next((i + first_number for i, char in enumerate(option_string[first_number:]) 
+                             if char in ['C', 'P']), None)
+        
+        # Return the part of the string before 'C' or 'P'
+        if first_c_or_p is not None:
+            return option_string[:first_c_or_p + 1]
+    
+    # Return the original string if no match
+    return option_string
+
+def extract_strike_price(option_string):
+    """
+    Extracts the strike price from an option string.
+
+    Args:
+        option_string (str): The option string to parse.
+
+    Returns:
+        float: The extracted strike price.
+    """
+    # Find position of the first number
+    first_number = next((i for i, char in enumerate(option_string) if char.isdigit()), None)
+    
+    # Ensure we start searching for 'C' or 'P' only after the first number
+    if first_number is not None:
+        first_c_or_p = next((i + first_number for i, char in enumerate(option_string[first_number:]) 
+                             if char in ['C', 'P']), None)
+        
+        # Return the part of the string before 'C' or 'P'
+        if first_c_or_p is not None:
+            return float(option_string[first_c_or_p + 1:])
+    
+    # Return the original string if no match
+    return None

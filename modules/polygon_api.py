@@ -99,6 +99,8 @@ def filter_message(msg, symbol, full_symbol, database_thread):
         return False
     if not greater_than_open_interest(msg, full_symbol, database_thread):
         return False
+    if not within_strike_price_range(msg, symbol, full_symbol, database_thread):
+        return False
     
 
     return True
@@ -116,6 +118,52 @@ def greater_than_open_interest(msg, full_symbol, database_thread):
     open_interest = database_thread.get_open_interest(full_symbol)
     return open_interest is not None and msg.size > open_interest
     
+
+def within_strike_price_range(msg, symbol, full_symbol, database_thread):
+    #split off the first part of the symbol from C or P
+    symbol_split = modules.utils.extract_symbol_and_date(full_symbol)
+    min, max = database_thread.get_strike_range(symbol_split)
+    min_range, max_range = calculate_range(min, max, symbol)
+    strike = modules.utils.extract_strike_price(msg.symbol) / 100
+
+    return min_range <= strike <= max_range
+
+
+def calculate_range(min_strike, max_strike, symbol):
+    """
+    Calculates the middle 40% range closest to the current price.
+
+    Args:
+        min_strike (float): Minimum strike price.
+        max_strike (float): Maximum strike price.
+        symbol (str): Stock ticker symbol.
+
+    Returns:
+        tuple: Lower and upper strike price range (middle 40%).
+    """
+    import modules.yfinance as yfinance  # Assuming custom module for yfinance
+    
+    # Step 1: Get the current price of the stock
+    price = yfinance.get_current_price(symbol)
+    
+    # Step 2: Calculate the 20% delta (half of 40%)
+    delta = price * 0.25
+    
+    # Step 3: Determine the lower and upper bounds of the middle 40%
+    lower_bound = price - delta
+    upper_bound = price + delta
+    
+    # Step 4: Ensure the bounds are within the given min and max strike prices
+    lower_bound = max(lower_bound, min_strike)
+    upper_bound = min(upper_bound, max_strike)
+    
+    # Print the results
+    print(f"Current Price: {price}")
+    print(f"Middle 50% Range: {lower_bound:.2f} to {upper_bound:.2f}")
+    
+    return lower_bound, upper_bound
+
+
 
 if __name__ == "__main__":
     start_client()

@@ -283,3 +283,25 @@ def extract_strike_price(option_string):
     
     # Return the original string if no match
     return None
+
+def log_trade_to_file(msg, symbol, full_symbol, database_thread):
+    """
+    Logs the trade data to a file.
+
+    Parameters
+    ----------
+    msg : WebSocketMessage
+        The WebSocket message containing the trade data.
+    symbol : str
+        The symbol of the option contract.
+    full_symbol : str
+        The full symbol identifier of the option contract.
+    database_thread : Database
+        The database thread object.
+
+    Returns
+    -------
+    None
+    """ 
+    with open("trades.txt", "a") as f:
+        f.write(f"{msg.price} {msg.size} {msg.timestamp} {symbol} {full_symbol} {database_thread.get_open_interest(full_symbol)}\n")

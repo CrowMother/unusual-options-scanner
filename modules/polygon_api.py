@@ -98,6 +98,7 @@ def filter_message(msg, symbol, full_symbol, database_thread):
     if not min_price(msg):
         return False
     if not greater_than_open_interest(msg, full_symbol, database_thread):
+        modules.utils.log_trade_to_file(msg, symbol, full_symbol, database_thread)
         return False
     if not within_strike_price_range(msg, symbol, full_symbol, database_thread):
         return False

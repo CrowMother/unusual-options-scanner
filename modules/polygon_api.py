@@ -30,44 +30,32 @@ def process_message(msg: WebSocketMessage):
         symbol_split = msg.symbol.split(":")[1]
         symbol = modules.utils.extract_symbol(symbol_split)
 
-        # Check if the symbol exists in the list of tickers
-        if symbol in TICKERS:
-            # print(f"Symbol {symbol} is in list of tickers")
+        # run through list of filters
+        if filter_message(msg, symbol, symbol_split, database_thread):
 
-            # Check open interest from the database
+
             open_interest = database_thread.get_open_interest(symbol_split)
-            # print(f"Open interest for {symbol} is {open_interest}")
-
-            # Check if the price * size * 100 meets the minimum threshold
-            minimum_price = int(modules.utils.get_secret("MINIMUM_PRICE"))
-            if (msg.price * msg.size) * 100 < minimum_price:
-                # print(f"Price * size * 100 is less than minimum price for {symbol}")
-                return
-
-            # Check if size is greater than open interest
-            if open_interest is not None and msg.size > open_interest:
-                # print(f"Size {msg.size} is greater than open interest {open_interest} for {symbol}")
 
                 # Format data into a JSON object
-                with app.app_context():
-                    data = modules.utils.jsonify_data(
-                        msg.price,
-                        msg.size,
-                        msg.timestamp,
-                        symbol,
-                        open_interest,
-                        msg.symbol
-                    )
+            with app.app_context():
+                data = modules.utils.jsonify_data(
+                    msg.price,
+                    msg.size,
+                    msg.timestamp,
+                    symbol,
+                    open_interest,
+                    msg.symbol
+                )
 
-                    # Send JSON data to webhook
-                    try:
-                        json.loads(json.dumps(data))
-                    except json.JSONDecodeError as e:
-                        print(f"Invalid JSON: {e}")
-                        # handle the error
-                    else:
-                        modules.utils.send_to_webhook(data)
-                        print(f"Sent data to webhook for {symbol}")
+                # Send JSON data to webhook
+                try:
+                    json.loads(json.dumps(data))
+                except json.JSONDecodeError as e:
+                    print(f"Invalid JSON: {e}")
+                    # handle the error
+                else:
+                    modules.utils.send_to_webhook(data)
+                    print(f"Sent data to webhook for {symbol}")
 
     except Exception as e:
             print(f"Error processing message: {e}")
@@ -100,6 +88,34 @@ def start_client():
         client.run(handle_msg)
     
 
+
+def filter_message(msg, symbol, full_symbol, database_thread):
+
+    if symbol not in TICKERS:
+        return False
+    if not min_size(msg):
+        return False
+    if not min_price(msg):
+        return False
+    if not greater_than_open_interest(msg, full_symbol, database_thread):
+        return False
+    
+
+    return True
+    
+
+def min_price(msg):
+    minimum_price = int(modules.utils.get_secret("MINIMUM_PRICE"))
+    return (msg.price * msg.size) * 100 >= minimum_price
+
+def min_size(msg):
+    minimum_size = int(modules.utils.get_secret("MINIMUM_SIZE"))
+    return msg.size >= minimum_size
+
+def greater_than_open_interest(msg, full_symbol, database_thread):
+    open_interest = database_thread.get_open_interest(full_symbol)
+    return open_interest is not None and msg.size > open_interest
+    
 
 if __name__ == "__main__":
     start_client()

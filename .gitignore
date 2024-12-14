@@ -2,3 +2,4 @@
 .config
 tokens.json
 *.db
+trades.txt

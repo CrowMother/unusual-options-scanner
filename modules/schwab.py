@@ -27,6 +27,15 @@ def get_option_chain_data(symbol):
 
 
 def get_all_option_chains(stocks):
+    """
+    Retrieves option chain data for a list of stocks using the Schwab API.
+
+    Args:
+        stocks (list): List of stock symbols
+
+    Returns:
+        list: List of dictionaries containing option chain data for each stock
+    """
     print("Getting option chain data for stocks...")
     results = []
 

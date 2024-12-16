@@ -101,7 +101,7 @@ def filter_message(msg, symbol, full_symbol, database_thread):
         return False
     
     modules.utils.log_trade_to_file(msg, symbol, full_symbol, database_thread)
-    
+
     if not within_strike_price_range(msg, symbol, full_symbol, database_thread):
         return False
     
@@ -127,7 +127,7 @@ def within_strike_price_range(msg, symbol, full_symbol, database_thread):
     symbol_split = modules.utils.extract_symbol_and_date(full_symbol)
     min, max = database_thread.get_strike_range(symbol_split)
     min_range, max_range = calculate_range(min, max, symbol)
-    strike = modules.utils.extract_strike_price(msg.symbol) / 100
+    strike = modules.utils.extract_strike_price(msg.symbol) / 1000
 
     return min_range <= strike <= max_range
 

@@ -20,12 +20,12 @@ def test_process_message():
         event_type='T',
         exchange=320,
         id=None,
-        price=1.24,
+        price=7.54,
         sequence_number=1085599239,
-        size=10000,
-        symbol='O:ACAD250117P00003000',
+        size=90,
+        symbol='O:AMZN250131P00225000',
         tape=None,
-        timestamp=1733937449037,
+        timestamp=1734362170232,
         trf_id=None,
         trf_timestamp=None
     )

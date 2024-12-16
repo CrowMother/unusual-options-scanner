@@ -1,3 +1,6 @@
 tokens.json
 .env
 database.db
+docs
+main_design.md
+polygon_api.md

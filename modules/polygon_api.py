@@ -69,7 +69,7 @@ def handle_msg(msgs: List[WebSocketMessage]):
     """
     Handles incoming messages concurrently using ThreadPoolExecutor.
     """
-    print(f"Received {len(msgs)} messages")
+    # print(f"Received {len(msgs)} messages")
 
     # Submit all messages to the thread pool for processing
     futures = [executor.submit(process_message, msg) for msg in msgs]
@@ -161,8 +161,8 @@ def calculate_range(min_strike, max_strike, symbol):
     upper_bound = min(upper_bound, max_strike)
     
     # Print the results
-    print(f"Current Price: {price}")
-    print(f"Middle 50% Range: {lower_bound:.2f} to {upper_bound:.2f}")
+    # print(f"Current Price: {price}")
+    # print(f"Middle 50% Range: {lower_bound:.2f} to {upper_bound:.2f}")
     
     return lower_bound, upper_bound
 

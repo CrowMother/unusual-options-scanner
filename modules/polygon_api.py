@@ -18,6 +18,10 @@ TICKERS = database.get_all_symbols()
 executor = ThreadPoolExecutor(max_workers=10)  # Adjust max_workers for your CPU capacity and workload
 
 
+#initialize constants
+MIN_PRICE = int(modules.utils.get_secret("MINIMUM_PRICE"))
+MIN_SIZE = int(modules.utils.get_secret("MINIMUM_SIZE"))
+
 def process_message(msg: WebSocketMessage):
     """
     Function to process an individual message.
@@ -93,9 +97,9 @@ def filter_message(msg, symbol, full_symbol, database_thread):
 
     if symbol not in TICKERS:
         return False
-    if not min_size(full_symbol, database_thread):
-        return False
     if not min_price(msg):
+        return False
+    if not min_size(full_symbol, database_thread):
         return False
     if not greater_than_open_interest(msg, full_symbol, database_thread):
         return False
@@ -110,13 +114,11 @@ def filter_message(msg, symbol, full_symbol, database_thread):
     
 
 def min_price(msg):
-    minimum_price = int(modules.utils.get_secret("MINIMUM_PRICE"))
-    return (msg.price * msg.size) * 100 >= minimum_price
+    return (msg.price * msg.size) * 100 >= MIN_PRICE
 
 def min_size(full_symbol, database_thread):
-    minimum_size = int(modules.utils.get_secret("MINIMUM_SIZE"))
     open_interest = database_thread.get_open_interest(full_symbol)
-    return int(open_interest) >= minimum_size
+    return int(open_interest) >= MIN_SIZE
 
 def greater_than_open_interest(msg, full_symbol, database_thread):
     open_interest = database_thread.get_open_interest(full_symbol)

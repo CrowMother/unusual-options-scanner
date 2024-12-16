@@ -23,7 +23,7 @@ def test_process_message():
         price=7.54,
         sequence_number=1085599239,
         size=90,
-        symbol='O:AMZN250131P00225000',
+        symbol='O:AMZN241220C00325000',
         tape=None,
         timestamp=1734362170232,
         trf_id=None,

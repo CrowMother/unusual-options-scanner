@@ -125,7 +125,7 @@ class Database:
         """
         self.cursor.execute("SELECT symbol, id FROM options")
         return [f"{row[0]} {row[1]}" for row in self.cursor.fetchall()]
-    
+
     def get_all_symbols(self):
         """
         Returns a list of all stock symbols in the database.
@@ -160,7 +160,7 @@ class Database:
         except Exception as e:
             print(f"Error during database query: {e}")
             return None
-        
+
     def get_strike_range(self, symbol):
         """
         Retrieves the minimum and maximum strike prices for a given stock symbol.

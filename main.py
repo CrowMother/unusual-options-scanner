@@ -38,16 +38,20 @@ def main():
 
     #step 2 get the schwab option chain data
     stocks = database.get_stocks()
-    option_chains = s.get_all_option_chains(stocks)
-    for chain in option_chains:
-        #print(chain)
+    for stock in stocks:
+        #get option chain for each stock
+        option_chain = s.get_one_option_chains(stock)
+        #store each option chain
+            #print(chain)
 
-        #filter based off the nearest half to the current price of the stock (later)
+            #filter based off the nearest half to the current price of the stock (later)
 
 
-        #step 2.1 write to database the option chain data for each stock
-        s.store_option_chain_data(chain, database)
+            #step 2.1 write to database the option chain data for each stock
+        s.store_option_chain_data(option_chain, database)
 
+    option_chain = ""
+    stocks = ""
 
     #step 3 create polygon listeners for each option chain in the database
 

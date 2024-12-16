@@ -26,7 +26,7 @@ def get_option_chain_data(symbol):
         raise  # Allow retry to handle errors
 
 
-def get_all_option_chains(stocks):
+def get_one_option_chains(stock):
     """
     Retrieves option chain data for a list of stocks using the Schwab API.
 
@@ -34,25 +34,19 @@ def get_all_option_chains(stocks):
         stocks (list): List of stock symbols
 
     Returns:
-        list: List of dictionaries containing option chain data for each stock
+        dict: Dictionary containing option chain data for the first successful stock
     """
     print("Getting option chain data for stocks...")
-    results = []
+    try:
+        result = get_option_chain_data(stock)
+        if result:
+            print(f"Completed: {stock}")
+            return result
+    except Exception as e:
+        print(f"Error for {stock}: {e}")
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
-        futures = {executor.submit(get_option_chain_data, stock): stock for stock in stocks}
-
-        for future in concurrent.futures.as_completed(futures):
-            symbol = futures[future]
-            try:
-                result = future.result()
-                if result:
-                    print(f"Completed: {symbol}")
-                    results.append(result)
-            except Exception as e:
-                print(f"Error for {symbol}: {e}")
-
-    return results
+    print("No valid option chain data found.")
+    return None
 
 def store_option_chain_data(option_chain_data, db):
     """
@@ -106,6 +100,6 @@ def pull_sub_data(expirations):
 
 if __name__ == "__main__":
     stocks = ["AAPL", "MSFT", "GOOG", "AMZN", "TSLA"]  # Replace with your stock list
-    option_chain_results = get_all_option_chains(stocks)
+    option_chain_results = get_one_option_chains(stocks)
     print("Final Results:")
     print(option_chain_results)

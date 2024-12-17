@@ -13,20 +13,16 @@ def main():
     database = db.Database()  # Initialize the Database instance
 
 
-    #look into swapping out step 1 with an external program to produce a list of valid stocks
     #step 1 - get list of valid stocks over the min values
 
     #check if the database is empty, if it is, fetch and add stocks
-    """+ yfinance.get_nasdaq()"""
-    if database.is_stocks_table_empty():
-        stocks = yfinance.filter_batch(yfinance.get_dow() + yfinance.get_nasdaq() , min_avg_volume=400000, min_market_cap=1000000000)
-        print(stocks)
-        #store stocks in database
-        for stock in stocks:
-            database.add_stock(str(stock))  # Call the add_stock method on the db_instance
+    database.delete_table("stocks")
+    modules.utils.build_database_from_file("stocks.txt", database)
 
+    if database.is_stocks_table_empty():
+        print ("stocks table is empty")
     else:
-        print("Database is not empty. Skipping stock addition.")
+        print("stocks table is not empty")
 
     #for testing delete the old table
     database.delete_table("options")
@@ -38,16 +34,11 @@ def main():
 
     #step 2 get the schwab option chain data
     stocks = database.get_stocks()
+
     for stock in stocks:
         #get option chain for each stock
         option_chain = s.get_one_option_chains(stock)
         #store each option chain
-            #print(chain)
-
-            #filter based off the nearest half to the current price of the stock (later)
-
-
-            #step 2.1 write to database the option chain data for each stock
         s.store_option_chain_data(option_chain, database)
 
     option_chain = ""

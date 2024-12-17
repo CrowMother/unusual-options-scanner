@@ -305,3 +305,26 @@ def log_trade_to_file(msg, symbol, full_symbol, database_thread):
     """ 
     with open("trades.txt", "a") as f:
         f.write(f"{msg.price} {msg.size} {msg.timestamp} {symbol} {full_symbol} {database_thread.get_open_interest(full_symbol)}\n")
+
+
+def build_database_from_file(file_path, database_thread):
+    """
+    Builds the database from a file of option symbols.
+
+    Parameters
+    ----------
+    file_path : str
+        The path to the file containing the option symbols.
+    database_thread : Database
+        The database thread object.
+
+    Returns
+    -------
+    None
+    """
+    database_thread.create_table("stocks", ["symbol TEXT PRIMARY KEY", "marketCap INTEGER", "averageVolume INTEGER"])
+
+    with open(file_path, "r") as f:
+        for line in f:
+            symbol = line.strip()
+            database_thread.add_stock(symbol)

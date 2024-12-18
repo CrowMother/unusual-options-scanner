@@ -191,6 +191,7 @@ def send_to_webhook(data):
 
     with app.app_context():
         try:
+            global SERVER_URL
             if SERVER_URL == "":
                 SERVER_URL = get_secret("SERVER_URL")
 

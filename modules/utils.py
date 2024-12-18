@@ -8,7 +8,7 @@ import requests
 FILE_PATH = ""
 app = Flask(__name__)
 streamer = None
-SERVER_URL = "http://localhost:3000/trades/UObot"
+SERVER_URL = ""
 
 
 def set_file_path(file_path):
@@ -191,6 +191,9 @@ def send_to_webhook(data):
 
     with app.app_context():
         try:
+            if SERVER_URL == "":
+                SERVER_URL = get_secret("SERVER_URL")
+
             print(f"sending data to: {SERVER_URL}")
             response = requests.post(f"{SERVER_URL}", json=data)  # Remove json.dumps
             response.raise_for_status()  # Handle HTTP errors

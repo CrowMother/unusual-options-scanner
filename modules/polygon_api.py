@@ -15,7 +15,7 @@ database = modules.my_database.Database()
 TICKERS = database.get_all_symbols()
 
 # Thread pool for concurrent message processing
-executor = ThreadPoolExecutor(max_workers=10)  # Adjust max_workers for your CPU capacity and workload
+executor = ThreadPoolExecutor(max_workers=int(modules.utils.get_secret("MAX_CONCURRENT_REQUESTS")))  # Adjust max_workers for your CPU capacity and workload
 
 
 #initialize constants

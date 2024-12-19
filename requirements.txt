@@ -6,3 +6,5 @@ flask
 schwabdev
 tenacity
 python-dotenv
+yahoo_fin
+requests_html

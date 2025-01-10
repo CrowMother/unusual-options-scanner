@@ -2,9 +2,9 @@ from polygon import WebSocketClient
 from polygon.websocket.models import WebSocketMessage, Market
 from typing import List
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import modules
 import json
 
+import modules
 from modules.utils import app
 
 # Initialize WebSocket client
@@ -33,7 +33,6 @@ def process_message(msg: WebSocketMessage):
         # Extract and validate symbol
         symbol_split = msg.symbol.split(":")[1]
         symbol = modules.utils.extract_symbol(symbol_split)
-
         # run through list of filters
         if filter_message(msg, symbol, symbol_split, database_thread):
 
@@ -69,7 +68,7 @@ def handle_msg(msgs: List[WebSocketMessage]):
     """
     Handles incoming messages concurrently using ThreadPoolExecutor.
     """
-    # print(f"Received {len(msgs)} messages")
+    print(f"Received {len(msgs)} messages")
 
     # Submit all messages to the thread pool for processing
     futures = [executor.submit(process_message, msg) for msg in msgs]
@@ -87,7 +86,11 @@ def start_client():
     Start the Polygon WebSocket client and subscribe to option trades.
     """
     print("Starting Polygon client...")
-    client.subscribe("T.*")  # Subscribe to all trades (filtering done in process_message)
+    # Subscribe to option trades that are within the TICKERS list
+    symbols = database.get_all_symbols()
+    for symbol in symbols:
+        client.subscribe(f"T:{symbol}")
+    # client.subscribe("T.*")  # Subscribe to all trades (filtering done in process_message)
     while True:
         client.run(handle_msg)
     
@@ -169,4 +172,4 @@ def calculate_range(min_strike, max_strike, symbol):
 
 
 if __name__ == "__main__":
-    start_client()
+    start_client(("AAPL","MSFT","GOOG","AMZN","TSLA"))

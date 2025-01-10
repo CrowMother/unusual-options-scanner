@@ -25,39 +25,38 @@ def main():
         print("stocks table is not empty")
 
     #for testing delete the old table
-    database.delete_table("options")
+    #database.delete_table("options")
     database.create_table("options", ["id INTEGER PRIMARY KEY AUTOINCREMENT", "symbol TEXT", "expirationDate TEXT", "strikePrice REAL", "callPut TEXT", "openInterest INTEGER", "lastPullTime TEXT"])
 
     #check if table is empty
     if database.is_options_table_empty():
         print("options table is empty")
 
-    #step 2 get the schwab option chain data
-    stocks = database.get_stocks()
+        #step 2 get the schwab option chain data
+        stocks = database.get_stocks()
 
-    for stock in stocks:
-        #get option chain for each stock
-        option_chain = s.get_one_option_chains(stock)
-        #store each option chain
-        s.store_option_chain_data(option_chain, database)
+        for stock in stocks:
+            #get option chain for each stock
+            option_chain = s.get_one_option_chains(stock)
+            #store each option chain
+            s.store_option_chain_data(option_chain, database)
 
-    option_chain = ""
-    stocks = ""
+        option_chain = ""
+        stocks = ""
 
-    #step 3 create polygon listeners for each option chain in the database
+        option_contracts = database.get_all_symbols()
 
-    #step 3.1 pull the option symbol from database
-    option_contracts = database.get_all_symbols()
+        contracts_string = []
 
-    contracts_string = []
-    #step 3.2 format the option contract for polygon listener
-    for contract in option_contracts:
-        # contract = modules.utils.remove_last_char(contract)
-        contract = modules.utils.remove_spaces(contract)
-        contract = modules.utils.prepend_string(contract, "T.O:")
+        for contract in option_contracts:
+            # contract = modules.utils.remove_last_char(contract)
+            contract = modules.utils.remove_spaces(contract)
+            contract = modules.utils.prepend_string(contract, "T.O:")
 
-        #combine into a string
-        contracts_string.append(str(contract))
+            #combine into a string
+            contracts_string.append(str(contract))
+    else:
+        print("options table is not empty")
 
 
     #Start websocket to get all market orders then filter out the ones that I am looking for

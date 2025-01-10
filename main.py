@@ -25,7 +25,7 @@ def main():
         print("stocks table is not empty")
 
     #for testing delete the old table
-    #database.delete_table("options")
+    database.delete_table("options")
     database.create_table("options", ["id INTEGER PRIMARY KEY AUTOINCREMENT", "symbol TEXT", "expirationDate TEXT", "strikePrice REAL", "callPut TEXT", "openInterest INTEGER", "lastPullTime TEXT"])
 
     #check if table is empty

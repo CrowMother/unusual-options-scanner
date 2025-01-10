@@ -21,6 +21,7 @@ executor = ThreadPoolExecutor(max_workers=int(modules.utils.get_secret("MAX_CONC
 #initialize constants
 MIN_PRICE = int(modules.utils.get_secret("MINIMUM_PRICE"))
 MIN_SIZE = int(modules.utils.get_secret("MINIMUM_SIZE"))
+OPEN_INTEREST_MODIFIER = float(modules.utils.get_secret("OPEN_INTEREST_MODIFIER"))
 
 def process_message(msg: WebSocketMessage):
     """
@@ -68,7 +69,7 @@ def handle_msg(msgs: List[WebSocketMessage]):
     """
     Handles incoming messages concurrently using ThreadPoolExecutor.
     """
-    print(f"Received {len(msgs)} messages")
+    #print(f"Received {len(msgs)} messages")
 
     # Submit all messages to the thread pool for processing
     futures = [executor.submit(process_message, msg) for msg in msgs]
@@ -89,8 +90,8 @@ def start_client():
     # Subscribe to option trades that are within the TICKERS list
     symbols = database.get_all_symbols()
     for symbol in symbols:
-        client.subscribe(f"T:{symbol}")
-    # client.subscribe("T.*")  # Subscribe to all trades (filtering done in process_message)
+        #client.subscribe(f"T:{symbol}")
+        client.subscribe("T.*")  # Subscribe to all trades (filtering done in process_message)
     while True:
         client.run(handle_msg)
     
@@ -122,6 +123,7 @@ def min_size(full_symbol, database_thread):
 
 def greater_than_open_interest(msg, full_symbol, database_thread):
     open_interest = database_thread.get_open_interest(full_symbol)
+    open_interest = open_interest * OPEN_INTEREST_MODIFIER
     return open_interest is not None and msg.size > open_interest
     
 
